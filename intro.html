@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 基础操作练习小结 · D0nkeyKong</title>
+<meta name="description" content="从账号配置、仓库克隆、分支合并、冲突解决到远程协作的完整 Git 练习过程记录">
+<style>
+  :root{
+    --bg:#0d1117; --bg-soft:#161b22; --card:#ffffff;
+    --text:#1f2328; --muted:#59636e; --line:#d8dee4;
+    --accent:#0969da; --accent-soft:#ddf4ff;
+    --green:#1a7f37; --green-soft:#dafbe1;
+    --orange:#bc4c00; --orange-soft:#fff1e5;
+    --purple:#8250df; --purple-soft:#fbefff;
+    --shadow:0 1px 3px rgba(31,35,40,.08),0 8px 24px rgba(31,35,40,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--text); background:#f6f8fa;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,#0d1117 0%,#1f2937 55%,#0b3d91 100%);
+    color:#e6edf3; padding:64px 24px 72px;
+  }
+  .hero-inner{max-width:960px;margin:0 auto}
+  .badge{
+    display:inline-block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    color:#7ee787;border:1px solid #2ea04355;background:#2ea04314;
+    padding:6px 14px;border-radius:999px;margin-bottom:20px;
+  }
+  .hero h1{margin:0 0 14px;font-size:clamp(28px,4vw,44px);line-height:1.25;font-weight:800}
+  .hero p.sub{margin:0;color:#9da7b3;font-size:clamp(15px,1.6vw,18px);max-width:720px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#ffffff12;border:1px solid #ffffff1f;color:#c9d1d9;
+    padding:8px 14px;border-radius:10px;font-size:13.5px;
+  }
+  .chip b{color:#fff;font-weight:600}
+  .dot{width:8px;height:8px;border-radius:50%;background:#7ee787;box-shadow:0 0 0 3px #7ee78733}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px 80px}
+  .toc{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 26px;margin-top:-40px;position:relative;z-index:2;
+  }
+  .toc h2{margin:0 0 14px;font-size:16px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+  .toc ol{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 22px;counter-reset:t}
+  .toc li{counter-increment:t}
+  .toc a{display:flex;gap:10px;align-items:baseline;padding:7px 10px;border-radius:8px;color:var(--text)}
+  .toc a::before{
+    content:counter(t,decimal-leading-zero);font-size:12px;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border-radius:6px;padding:1px 7px;
+  }
+  .toc a:hover{background:#f3f4f6;text-decoration:none}
+
+  /* ---------- Task card ---------- */
+  section.task{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:30px 32px;margin-top:28px;scroll-margin-top:20px;
+  }
+  .task-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .num{
+    flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    color:#fff;font-weight:800;font-size:17px;background:linear-gradient(135deg,#0969da,#218bff);
+  }
+  .task h2{margin:0;font-size:22px;font-weight:750}
+  .task .goal{color:var(--muted);font-size:14.5px;margin:2px 0 18px 56px}
+  h3.block{
+    display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.06em;margin:24px 0 10px;
+  }
+  h3.block::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--accent)}
+
+  pre.cmd{
+    margin:0;background:var(--bg);color:#e6edf3;border-radius:12px;padding:18px 20px;
+    overflow:auto;font-size:13.5px;line-height:1.65;border:1px solid #30363d;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  pre.cmd .p{color:#7ee787;font-weight:700}
+  pre.cmd .c{color:#8b949e;font-style:italic}
+  pre.cmd .k{color:#ffa657}
+
+  figure{margin:0}
+  figure.shot{margin:10px 0 0}
+  figure.shot img{
+    display:block;width:100%;height:auto;border-radius:12px;
+    border:1px solid var(--line);box-shadow:0 6px 18px rgba(31,35,40,.12);
+  }
+  figcaption{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+
+  .note{
+    display:flex;gap:12px;background:var(--green-soft);border:1px solid #aceebb;
+    border-left:4px solid var(--green);border-radius:10px;padding:13px 16px;margin-top:14px;
+    font-size:14.5px;color:#136c2e;
+  }
+  .note .ico{flex:none;font-weight:800}
+
+  ul.plain{margin:6px 0 0;padding-left:20px;font-size:15px}
+  ul.plain li{margin:4px 0}
+  code:not(pre code){
+    background:#eff1f3;border:1px solid var(--line);border-radius:6px;
+    padding:1.5px 6px;font-size:13px;
+    font-family:"SFMono-Regular",Consolas,Menlo,monospace;color:#cf222e;
+  }
+
+  /* ---------- Summary table ---------- */
+  section.summary{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:30px 32px;margin-top:28px;
+  }
+  .table-scroll{overflow-x:auto;margin-top:8px}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:#f6f8fa;color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.05em}
+  tbody tr:hover{background:#fafbfc}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px}
+  .pill.ok{background:var(--green-soft);color:var(--green);border:1px solid #aceebb}
+
+  /* ---------- Cheatsheet ---------- */
+  .cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px}
+  .cheat .box{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fbfcfd}
+  .cheat .box h4{margin:0 0 8px;font-size:14px;color:var(--accent)}
+  .cheat .box code{display:block;font-size:13px;color:#1f2328;padding:2px 0;
+    font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+
+  footer{text-align:center;color:var(--muted);font-size:13.5px;margin-top:44px;line-height:1.9}
+  footer .heart{color:#cf222e}
+  @media(max-width:620px){
+    .hero{padding:44px 18px 56px}
+    .wrap{padding:0 14px 60px}
+    section.task,section.summary{padding:22px 18px}
+    .task .goal{margin-left:0}
+    .toc{margin-top:-28px;padding:18px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">Git 基础操作 · 练习小结</span>
+    <h1>从 0 到远程协作：<br>Git 六大基础任务实践记录</h1>
+    <p class="sub">账号与配置 → 创建仓库与克隆 → 分支管理与合并 → 冲突解决 → 远程同步与多人协作。<br>
+       全部操作均在真实 GitHub 仓库 <b>D0nkeyKong/web</b> 上完成，命令与运行结果一一对应。</p>
+    <div class="meta">
+      <span class="chip"><span class="dot"></span>作者：<b>D0nkeyKong</b></span>
+      <span class="chip">邮箱：d77714334@gmail.com</span>
+      <span class="chip">Git：<b>2.53.0</b></span>
+      <span class="chip">仓库：<b>D0nkeyKong/web</b></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 目录 -->
+  <nav class="toc">
+    <h2>目录导航</h2>
+    <ol>
+      <li><a href="#task1">环境检查与用户配置</a></li>
+      <li><a href="#task2">创建远程仓库并克隆、首次提交</a></li>
+      <li><a href="#task3">创建 dev 分支并提交</a></li>
+      <li><a href="#task4">把 dev 合并到 main</a></li>
+      <li><a href="#task5">模拟并解决冲突</a></li>
+      <li><a href="#task6">推送到远程与多人协作</a></li>
+      <li><a href="#summary">任务完成总览</a></li>
+      <li><a href="#cheat">常用命令速查</a></li>
+    </ol>
+  </nav>
+
+  <!-- 任务一 -->
+  <section class="task" id="task1">
+    <div class="task-head"><div class="num">1</div><h2>环境检查与用户配置</h2></div>
+    <p class="goal">确认 Git 客户端已安装、全局身份配置正确，并验证 SSH 与 GitHub 的连通性。</p>
+
+    <h3 class="block">说明</h3>
+    <p>Git 提交需要记录「作者」，因此第一步是配置 <code>user.name</code> 与 <code>user.email</code>。
+       随后用 <code>ssh -T git@github.com</code> 验证公钥是否已成功绑定到 GitHub 账号。</p>
+
+    <h3 class="block">执行命令</h3>
+<pre class="cmd"><span class="c"># 查看版本与全局配置</span>
+<span class="p">$</span> git --version
+<span class="p">$</span> git config --global user.name
+<span class="p">$</span> git config --global user.email
+
+<span class="c"># 验证 SSH 与 GitHub 的连通性</span>
+<span class="p">$</span> ssh -T git@github.com</pre>
+
+    <h3 class="block">运行截图</h3>
+    <figure class="shot">
+      <img src="images/task1.svg" alt="任务1：git 版本、用户配置与 SSH 认证结果">
+      <figcaption>图 1　环境检查：Git 2.53.0、用户配置、SSH 认证成功</figcaption>
+    </figure>
+
+    <div class="note"><span class="ico">✓</span>
+      <div><b>结果：</b>Git 已安装（2.53.0）；身份为 <code>D0nkeyKong / d77714334@gmail.com</code>；
+        出现 <code>Hi D0nkeyKong!</code> 说明 SSH 公钥配置成功（<code>ssh -T</code> 返回码 1 属正常，GitHub 不提供 shell）。</div>
+    </div>
+  </section>
+
+  <!-- 任务二 -->
+  <section class="task" id="task2">
+    <div class="task-head"><div class="num">2</div><h2>创建远程仓库并克隆、完成首次提交</h2></div>
+    <p class="goal">在 GitHub 新建空仓库 <b>web</b>，克隆到本地，添加 README 并完成第一次提交与推送。</p>
+
+    <h3 class="block">说明</h3>
+    <p>在 GitHub 网页点击 <b>New repository</b> 创建空仓库（<b>不勾选</b> Add a README，避免首次推送冲突），
+       复制 SSH 地址后用 <code>git clone</code> 下载到本地。首次提交遵循「改文件 → add → commit → push」四步曲。</p>
+
+    <h3 class="block">执行命令</h3>
+<pre class="cmd"><span class="c"># 1. 克隆空仓库到本地</span>
+<span class="p">$</span> git clone git@github.com:D0nkeyKong/web.git
+<span class="p">$</span> cd web
+
+<span class="c"># 2. 创建文件并完成首次提交</span>
+<span class="p">$</span> echo "# web" &gt; README.md
+<span class="p">$</span> git status
+<span class="p">$</span> git add README.md
+<span class="p">$</span> git commit -m "首次提交:添加 README"
+
+<span class="c"># 3. 推送到远程并建立跟踪关系</span>
+<span class="p">$</span> git push -u origin main</pre>
+
+    <h3 class="block">运行截图</h3>
+    <figure class="shot">
+      <img src="images/task2.svg" alt="任务2：克隆、首次提交与推送结果">
+      <figcaption>图 2　克隆空仓库 → 首次提交 <code>94771aa</code> → 推送并跟踪 origin/main</figcaption>
+    </figure>
+
+    <div class="note"><span class="ico">✓</span>
+      <div><b>结果：</b>首次提交哈希 <code>94771aa</code>，远程新增 <code>main</code> 分支，本地与远程建立跟踪关系。</div>
+    </div>
+  </section>
+
+  <!-- 任务三 -->
+  <section class="task" id="task3">
+    <div class="task-head"><div class="num">3</div><h2>创建 dev 分支并在其上提交</h2></div>
+    <p class="goal">用 <code>git switch -c</code> 创建并切换到 <b>dev</b> 分支，新增功能文件并提交。</p>
+
+    <h3 class="block">说明</h3>
+    <p>分支让开发互不干扰。在 <code>dev</code> 上新增 <code>feature.txt</code>，提交只影响 <code>dev</code>，<code>main</code> 保持干净。</p>
+
+    <h3 class="block">执行命令</h3>
+<pre class="cmd"><span class="c"># 创建并切换到 dev 分支</span>
+<span class="p">$</span> git switch -c dev
+<span class="p">$</span> git branch              <span class="c"># 确认当前分支（* 号所在）</span>
+
+<span class="c"># 新增文件并提交</span>
+<span class="p">$</span> echo "登录功能：dev 分支开发中" &gt; feature.txt
+<span class="p">$</span> git add feature.txt
+<span class="p">$</span> git commit -m "dev: 新增 feature.txt"</pre>
+
+    <h3 class="block">运行截图</h3>
+    <figure class="shot">
+      <img src="images/task3.svg" alt="任务3：创建 dev 分支并提交 feature.txt">
+      <figcaption>图 3　新建 <code>dev</code> 分支，提交 <code>059d28b</code></figcaption>
+    </figure>
+
+    <div class="note"><span class="ico">✓</span>
+      <div><b>结果：</b>分支 dev 创建成功，提交 <code>059d28b dev: 新增 feature.txt</code>。</div>
+    </div>
+  </section>
+
+  <!-- 任务四 -->
+  <section class="task" id="task4">
+    <div class="task-head"><div class="num">4</div><h2>把 dev 合并到 main</h2></div>
+    <p class="goal">先推送 dev，再回到 main，用 <code>--no-ff</code> 合并，保留清晰的分叉与合并历史。</p>
+
+    <h3 class="block">说明</h3>
+    <p><code>--no-ff</code>（禁止快进）会强制生成一个合并提交，即使 main 没动过也能在历史中看到分支结构，便于追溯。</p>
+
+    <h3 class="block">执行命令</h3>
+<pre class="cmd"><span class="c"># 推送 dev 分支到远程</span>
+<span class="p">$</span> git push -u origin dev
+
+<span class="c"># 回到 main 并合并 dev</span>
+<span class="p">$</span> git switch main
+<span class="p">$</span> git merge --no-ff dev -m "merge: dev 合并到 main"
+
+<span class="c"># 查看图形化历史</span>
+<span class="p">$</span> git log --oneline --graph --all</pre>
+
+    <h3 class="block">运行截图</h3>
+    <figure class="shot">
+      <img src="images/task4.svg" alt="任务4：--no-ff 合并 dev 到 main">
+      <figcaption>图 4　合并提交 <code>afbba79</code>，可看到 <code>|\</code> <code>|/</code> 分叉结构</figcaption>
+    </figure>
+
+    <div class="note"><span class="ico">✓</span>
+      <div><b>结果：</b>生成合并提交 <code>afbba79 merge: dev 合并到 main</code>，main 与 dev 均同步至远程。</div>
+    </div>
+  </section>
+
+  <!-- 任务五 -->
+  <section class="task" id="task5">
+    <div class="task-head"><div class="num">5</div><h2>模拟并解决冲突</h2></div>
+    <p class="goal">让两个分支修改同一文件的同一行，制造冲突，再手工解决并完成合并。</p>
+
+    <h3 class="block">说明</h3>
+    <p>从 main 分出 <code>feature-a</code> 与 <code>feature-b</code>，两者都修改 <code>app.txt</code> 的第一行。
+       先合并 A 成功；再合并 B 时 Git 无法自动决定保留哪一行，于是产生冲突标记：
+       <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>、<code>=======</code>、<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-b</code>。
+       手动改成最终内容、删除标记，<code>add</code> 后 <code>commit</code> 即完成合并。</p>
+
+    <h3 class="block">执行命令</h3>
+<pre class="cmd"><span class="c"># 制造冲突（两个分支改同一行）</span>
+<span class="p">$</span> git switch -c feature-a main   <span class="c"># 改 app.txt 第一行 → add → commit</span>
+<span class="p">$</span> git switch -c feature-b main   <span class="c"># 改同一行 → add → commit</span>
+<span class="p">$</span> git switch main
+<span class="p">$</span> git merge --no-ff feature-a -m "merge: feature-a"   <span class="c"># 成功</span>
+<span class="p">$</span> git merge --no-ff feature-b -m "merge: feature-b"   <span class="c"># 冲突！</span>
+
+<span class="c"># 解决冲突四步</span>
+<span class="p">$</span> cat app.txt                                   <span class="c"># 1 查看冲突</span>
+<span class="p">$</span> echo "第一行：A 和 B 的修改已合并" &gt; app.txt   <span class="c"># 2 手动改成最终内容</span>
+<span class="p">$</span> git add app.txt                              <span class="c"># 3 标记已解决</span>
+<span class="p">$</span> git commit -m "merge: 解决 app.txt 的合并冲突" <span class="c"># 4 提交完成合并</span></pre>
+
+    <h3 class="block">运行截图</h3>
+    <figure class="shot">
+      <img src="images/task5.svg" alt="任务5：冲突标记与解决后的合并提交">
+      <figcaption>图 5　冲突提示、冲突标记内容，以及解决后的合并提交 <code>3dd8796</code></figcaption>
+    </figure>
+
+    <div class="note"><span class="ico">✓</span>
+      <div><b>结果：</b>冲突已手工解决并提交 <code>3dd8796 merge: 解决 app.txt 的合并冲突</code>。
+        如想放弃本次合并，可用 <code>git merge --abort</code>。</div>
+    </div>
+  </section>
+
+  <!-- 任务六 -->
+  <section class="task" id="task6">
+    <div class="task-head"><div class="num">6</div><h2>推送到远程与多人协作</h2></div>
+    <p class="goal">推送代码，模拟另一位同学提交并推送，再通过 fetch / pull 把自己的本地仓库同步到最新。</p>
+
+    <h3 class="block">说明</h3>
+    <p>协作的核心是「别人先推，你后拉」。用一次 <code>git fetch</code> 只下载不改工作区（状态显示 <code>[behind 1]</code>），
+       <code>git pull</code> 等于 <code>fetch + merge</code>，真正把更新合并进工作区。新版 Git 需先设置
+       <code>pull.rebase false</code>，否则 <code>pull</code> 会报错。</p>
+
+    <h3 class="block">执行命令</h3>
+<pre class="cmd"><span class="c"># 建议先设置 pull 策略</span>
+<span class="p">$</span> git config --global pull.rebase false
+
+<span class="c"># 同学那边：克隆 → 修改 → 提交 → 推送</span>
+<span class="p">$</span> git clone git@github.com:D0nkeyKong/web.git web-teammate
+<span class="p">$</span> git config user.name "同学Li"
+<span class="p">$</span> git commit -am "同学Li: 更新 README"
+<span class="p">$</span> git push origin main
+
+<span class="c"># 你这边：先 fetch 查看，再 pull 同步</span>
+<span class="p">$</span> git fetch origin
+<span class="p">$</span> git status -sb          <span class="c"># → ## main...origin/main [behind 1]</span>
+<span class="p">$</span> git pull                <span class="c"># = fetch + merge，真正同步</span></pre>
+
+    <h3 class="block">运行截图</h3>
+    <figure class="shot">
+      <img src="images/task6.svg" alt="任务6：同学推送与你侧 fetch/pull 同步">
+      <figcaption>图 6　同学推送 <code>88e2137</code>；你侧 fetch 后显示 behind 1，pull 快进合并完成同步</figcaption>
+    </figure>
+
+    <div class="note"><span class="ico">✓</span>
+      <div><b>结果：</b>模拟同学提交 <code>88e2137</code> 并推送；本地 <code>fetch → status → pull</code> 后与远程完全一致。</div>
+    </div>
+  </section>
+
+  <!-- 历史总览 -->
+  <section class="task" id="history">
+    <div class="task-head"><div class="num">★</div><h2>最终提交历史总览</h2></div>
+    <p class="goal">一条命令看清全部分支、分叉、合并与协作提交。</p>
+<pre class="cmd"><span class="p">$</span> git log --oneline --graph --all --decorate</pre>
+    <figure class="shot">
+      <img src="images/final.svg" alt="最终提交历史图">
+      <figcaption>图 7　完整历史：首次提交 → dev 合并 → feature-a/b 合并与冲突解决 → 同学协作提交</figcaption>
+    </figure>
+  </section>
+
+  <!-- 总览表 -->
+  <section class="summary" id="summary">
+    <h2 style="margin-top:0">任务完成总览</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>任务</th><th>内容</th><th>关键提交 / 命令</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>注册账号、安装 Git、配置用户信息</td><td><code>git config --global user.name/email</code>、<code>ssh -T git@github.com</code></td><td><span class="pill ok">完成</span></td></tr>
+          <tr><td>2</td><td>创建远程仓库 → 克隆 → 首次提交</td><td><code>94771aa 首次提交:添加 README</code></td><td><span class="pill ok">完成</span></td></tr>
+          <tr><td>3</td><td>创建 dev 分支并提交</td><td><code>059d28b dev: 新增 feature.txt</code></td><td><span class="pill ok">完成</span></td></tr>
+          <tr><td>4</td><td>把 dev 合并到 main</td><td><code>afbba79 merge: dev 合并到 main</code></td><td><span class="pill ok">完成</span></td></tr>
+          <tr><td>5</td><td>模拟并解决冲突</td><td><code>3dd8796 merge: 解决 app.txt 的合并冲突</code></td><td><span class="pill ok">完成</span></td></tr>
+          <tr><td>6</td><td>推送远程 + 多人协作同步</td><td><code>88e2137 同学Li: 更新 README</code>、<code>fetch</code>/<code>pull</code></td><td><span class="pill ok">完成</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 速查表 -->
+  <section class="summary" id="cheat">
+    <h2 style="margin-top:0">常用命令速查</h2>
+    <div class="cheat">
+      <div class="box"><h4>查看与配置</h4>
+        <code>git --version</code><code>git config --global --list</code><code>git remote -v</code><code>git branch -a</code></div>
+      <div class="box"><h4>提交三步曲</h4>
+        <code>git status</code><code>git add .</code><code>git commit -m "说明"</code><code>git push</code></div>
+      <div class="box"><h4>分支与合并</h4>
+        <code>git switch -c dev</code><code>git switch main</code><code>git merge --no-ff dev</code><code>git branch -d dev</code></div>
+      <div class="box"><h4>远程协作</h4>
+        <code>git clone &lt;url&gt;</code><code>git fetch origin</code><code>git pull</code><code>git push -u origin main</code></div>
+      <div class="box"><h4>撤销与暂存</h4>
+        <code>git restore &lt;file&gt;</code><code>git restore --staged &lt;file&gt;</code><code>git stash</code><code>git stash pop</code></div>
+      <div class="box"><h4>查看历史</h4>
+        <code>git log --oneline --graph --all --decorate</code><code>git diff</code><code>git diff --staged</code></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Git 基础操作练习小结 · <b>D0nkeyKong</b> · 2026-09-11</p>
+    <p>仓库：<a href="https://github.com/D0nkeyKong/web">github.com/D0nkeyKong/web</a>　|　
+       页面源码：<code>intro.html</code>　|　截图：<code>images/*.svg</code></p>
+    <p>Made with <span class="heart">♥</span> for learning Git.</p>
+  </footer>
+
+</main>
+</body>
+</html>

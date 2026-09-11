@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="439" viewBox="0 0 660 439" role="img" aria-label="task5 - 冲突与解决">
+<defs><clipPath id="c"><rect x="1" y="1" rx="10" ry="10" width="658" height="437"/></clipPath></defs>
+<rect x="1" y="1" width="658" height="437" rx="10" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+<path d="M1 36.0 H659" stroke="#30363d" stroke-width="1.5"/>
+<rect x="1" y="1" width="658" height="35" rx="10" fill="#161b22"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f56"/>
+<circle cx="40" cy="18" r="6" fill="#ffbd2e"/>
+<circle cx="60" cy="18" r="6" fill="#27c93f"/>
+<text x="330" y="23" text-anchor="middle" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="12.5" fill="#8b949e">task5 - 冲突与解决</text>
+<text x="22" y="58" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#7ee787" font-weight="700">$</text>
+<text x="39" y="58" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#f0f6fc" font-weight="700">git merge --no-ff feature-b -m "merge: feature-b"</text>
+<text x="22" y="81" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">Auto-merging app.txt</text>
+<text x="22" y="104" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">CONFLICT (content): Merge conflict in app.txt</text>
+<text x="22" y="127" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">Automatic merge failed; fix conflicts and then commit the result.</text>
+<text x="22" y="150" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7"></text>
+<text x="22" y="173" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#7ee787" font-weight="700">$</text>
+<text x="39" y="173" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#f0f6fc" font-weight="700">cat app.txt</text>
+<text x="22" y="196" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</text>
+<text x="22" y="219" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">第一行：A 同学的修改</text>
+<text x="22" y="242" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">=======</text>
+<text x="22" y="265" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">第一行：B 同学的修改</text>
+<text x="22" y="288" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-b</text>
+<text x="22" y="311" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7"></text>
+<text x="22" y="334" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#7ee787" font-weight="700">$</text>
+<text x="39" y="334" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#f0f6fc" font-weight="700">echo "第一行：A 和 B 的修改已合并" &gt; app.txt</text>
+<text x="22" y="357" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#7ee787" font-weight="700">$</text>
+<text x="39" y="357" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#f0f6fc" font-weight="700">git add app.txt</text>
+<text x="22" y="380" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#7ee787" font-weight="700">$</text>
+<text x="39" y="380" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#f0f6fc" font-weight="700">git commit -m "merge: 解决 app.txt 的合并冲突"</text>
+<text x="22" y="403" font-family="'DejaVu Sans Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="14" fill="#adbac7">[main 3dd8796] merge: 解决 app.txt 的合并冲突</text>
+</svg>
